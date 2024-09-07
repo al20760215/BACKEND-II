@@ -1,67 +1,63 @@
-import re
+import re  # Importamos el modulo 're' para trabajar con expresiones regulares
 
-# Definir los valores de los símbolos romanos
-roman_numerals = {
-    'I': 1, 'V': 5, 'X': 10, 'L': 50,
-    'C': 100, 'D': 500, 'M': 1000
-}
+class ConversorRomano: 
+    def __init__(self): # Definimos un diccionario de los numeros romanos
+        self.no_romanos = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}
 
-# Función para convertir un número romano a decimal
-def roman_to_decimal(roman):
-    value = 0
-    prev_value = 0
+    def convertir(self, romano): # Metodo para convertir una cadena de numeros romanos a un numero entero
+        if not isinstance(romano, str): # Si el valor no es una cadena de texto, muestramos un mensaje de error
+            raise ValueError('ERROR...INTRODUCE UNA PALABRA')
+        valor = romano.upper()  # Conviertimos el texto a mayusculas
+        entero = 0  # Determinamos valor 0 a la variable para almacenar el numero entero resultante de la suma
+        for i in range(len(valor)):
+            if i > 0 and self.no_romanos[valor[i - 1]] < self.no_romanos[valor[i]]: # Recorremos cada caracter en la cadena de texto
+                entero += self.no_romanos[valor[i]] - 2 * self.no_romanos[valor[i - 1]] # Determinamos si el valor del numero romano es menor que el valor del caracter actual
+                # Ajustamos el valor sumando el valor actual y restando dos veces el valor anterior
+            else:
+                entero += self.no_romanos[valor[i]]
+                # Si no es el caso anterior, simplemente sumamos el valor del caracter actual
+        return entero  # Devuelvemos el numero entero ya convertido
 
-    for char in reversed(roman):
-        if char not in roman_numerals:
-            return None
-        current_value = roman_numerals[char]
-        if current_value < prev_value:
-            value -= current_value
+    def extraer_numeros(self, texto):
+        # Buscamos los numeros romanos en la palabra
+        patron = r'[IVXLCDM]+'  # Esta es una expresion regular para encontrar a los numeros romanos
+        return re.findall(patron, texto.upper())  # Devuelvemos la lista de todos los numeros romanos encontrados
+
+def procesar(palabras, conversor):
+    # Definimos la funcion para prcesar la lista de palabras para convertirlas a numeros romanos
+    for palabra in palabras: # Recorremos cada palabra en la lista
+        numeros_no_romanos = conversor.extraer_numeros(palabra) # Buscamos todos los numeros romanos en la palabra
+        if numeros_no_romanos: # Si hay numeros romanos encontrados
+            for numeral in numeros_no_romanos: # Recorremos cada numero romano encontrado
+                print(f"{numeral} en '{palabra}' = {conversor.convertir(numeral)}") # Imprimimos el numero romano y su valor convertido
         else:
-            value += current_value
-        prev_value = current_value
+            print(f"No tiene numero romanos: '{palabra}'")
 
-    return value
+def mostrar_menu():
+    # Menu de opciones para el usuario
+    print("\nMenu")
+    print("1 - Lista de palabras")
+    print("2 - Ingresar manualmente")
+    print("0 - Salir")
 
-# Función para validar el patrón de números romanos
-def is_valid_roman(roman):
-    # Reglas de validación usando regex
-    pattern = re.compile(r'^(M{0,3})(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$')
-    return pattern.match(roman) is not None
+def main():
+    # Funcion principal
+    conversor = ConversorRomano()  # Creamos una instancia 
+    while True: # Repitimos el ciclo hasta que indiquemos salir
+        mostrar_menu()  # Mostramos el menu de opciones
+        opcion = input("\nOpcion: ")  # Obtenemos la opcion del usuario
+        if opcion == '0':
+            break
+        elif opcion == '1':
+            lista_palabras = ["PIXEL", "CIVIL", "PACO", "HIJO", "TOXICO", "CAMION", "CLAVE", "XIMENA", "DAMIAN", "LILI", "CLAUDIA", "MEDALLON", "CLIMA"]
+            procesar(lista_palabras, conversor)
+        elif opcion == '2':
+            entrada = input("Ingrese palabras: ")
+            palabras = [palabra.strip() for palabra in entrada.split(',')] # Dividimos las palabras ingresadas por comas y eliminamos espacios extra
+            procesar(palabras, conversor)
+        else:
+            print("Error") # Muestramos un mensaje de error si la opcion no es valida
 
-# Función para analizar cada letra y encontrar secuencias válidas
-def extract_roman_substrings(word):
-    word = word.upper()
-    roman_substrings = []
+if __name__ == "__main__":
+    main()
     
-    # Buscar todas las posibles secuencias romanas en la palabra
-    for i in range(len(word)):
-        for j in range(i+1, len(word)+1):
-            substring = word[i:j]
-            if is_valid_roman(substring):
-                roman_substrings.append(substring)
-    
-    return roman_substrings
-
-# Función para convertir palabras a valores romanos
-def word_to_roman_value(word):
-    roman_substrings = extract_roman_substrings(word)
-    
-    if not roman_substrings:
-        return None
-    
-    # Convertir las secuencias válidas a valores decimales
-    values = [roman_to_decimal(substring) for substring in roman_substrings]
-    
-    return values
-
-# Lista de palabras a evaluar
-words = [
-    'PIXEL', 'CIVIL', 'PACO', 'HIJO', 'TOXICO', 'CAMION', 'CLAVE',
-    'XIMENA', 'DAMIAN', 'LILI', 'CLAUDIA', 'MEDALLON', 'CLIMA'
-]
-
-# Imprimir valores decimales para cada palabra
-for word in words:
-    values = word_to_roman_value(word)
-    print(f'{word} = {values}')
