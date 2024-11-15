@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Edificios</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Edificios</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Número de Edificio</th>
+            <th>Área</th>
+            <th>Pisos</th>
+        </tr>
+        {% for edificio in edificios %}
+        <tr>
+            <td>{{ edificio[0] }}</td>
+            <td>{{ edificio[1] }}</td>
+            <td>{{ edificio[2] }}</td>
+            <td>{{ edificio[3] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

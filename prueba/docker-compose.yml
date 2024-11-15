@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  bd:
+    image: postgres
+    container_name: bd
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=bd
+    networks:
+      - lan
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  mi-nginx:
+    depends_on:
+      - bd
+    build:
+      context: .
+    container_name: mi-nginx
+    ports:
+      - "80:80"
+    networks:
+      - lan
+
+networks:
+  lan:
+    driver: bridge
+
+volumes:
+  pgdata:
+    driver: local
